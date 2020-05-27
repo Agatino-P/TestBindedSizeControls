@@ -1,0 +1,83 @@
+﻿<Window x:Class="BindedSizeControls.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:BindedSizeControls"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="MainWindow" Width="650" Height="650"
+        d:DataContext="{d:DesignInstance Type={x:Type local:MainWindowViewModel}}"
+        mc:Ignorable="d">
+
+    <Window.DataContext>
+        <local:MainWindowViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        
+        <Style x:Key="HideableColumn" TargetType="ColumnDefinition">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsTwoFields, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}" Value="true">
+                    <Setter Property="Width" Value="0" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <DataTemplate x:Key="SizeableDataTemplate" DataType="{x:Type local:SizeableItem}">
+            <Grid ShowGridLines="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0" />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition Style="{DynamicResource HideableColumn}" />
+                    <ColumnDefinition Style="{DynamicResource HideableColumn}" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="{Binding Column}"
+                        Grid.ColumnSpan="{Binding Size}"
+                        BorderBrush="Black" BorderThickness="1">
+                    <TextBlock Background="Gray"
+                               Text="{Binding Name}"
+                               TextAlignment="Center" />
+                </Border>
+            </Grid>
+        </DataTemplate>
+
+    </Window.Resources>
+    <StackPanel>
+        <CheckBox Margin="20" Content="IsTwoFields"
+                  IsChecked="{Binding IsTwoFields}" />
+
+        <DataGrid Height="100" Margin="10" AutoGenerateColumns="False"
+                  CanUserAddRows="True"
+                  ItemsSource="{Binding Items}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="300"
+                                    Binding="{Binding Name}"
+                                    Header="Name" />
+                <DataGridTextColumn Width="100"
+                                    Binding="{Binding Column}"
+                                    Header="Column" />
+                <DataGridTextColumn Width="100"
+                                    Binding="{Binding Size}"
+                                    Header="Size" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Border Margin="10" Background="WhiteSmoke" BorderBrush="Blue"
+                BorderThickness="1">
+            <ItemsControl ItemTemplate="{StaticResource SizeableDataTemplate}" ItemsSource="{Binding Items}" />
+        </Border>
+
+
+        <Border Margin="10" Background="WhiteSmoke" BorderBrush="Blue"
+                BorderThickness="1">
+            <ItemsControl ItemTemplate="{StaticResource SizeableDataTemplate}" ItemsSource="{Binding Items}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Border>
+
+
+    </StackPanel>
+</Window>
